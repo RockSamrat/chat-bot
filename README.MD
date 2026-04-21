@@ -33,7 +33,7 @@ ollama pull llama3.2
 ### 3. Clone this repository
 
 ```bash
-git clone https://github.com/your-username/your-repo-name.git
+git clone https://github.com/RockSamrat/chat-bot
 cd chat-bot
 ```
 
