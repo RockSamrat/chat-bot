@@ -1,89 +1,97 @@
-# AI Chatbot with Ollama
-
-An AI chatbot powered by Ollama and LangChain, running fully locally on your machine — no internet or API keys needed.
-
-## Features
-
-- Streaming responses with a live typing effect
-- Conversation memory (remembers previous messages)
-- Response time display
-- Exception handling for clean error messages
-
-## Requirements
-
-- Python 3.8+
-- [Ollama](https://ollama.com) installed on your machine
-
-## Setup
-
-### 1. Install Ollama
-
-Download and install Ollama from [https://ollama.com](https://ollama.com) and make sure it is running:
-
-```bash
-ollama serve
-```
-
-### 2. Pull the model
-
-```bash
-ollama pull llama3.2
-```
-
-### 3. Clone this repository
-
-```bash
-git clone https://github.com/RockSamrat/chat-bot
-cd chat-bot
-```
-
-### 4. Create a virtual environment
-
-```bash
-python -m venv venv
-```
-
-Activate it:
-
-- **Windows:**
-  ```bash
-  venv\Scripts\activate
-  ```
-- **Mac/Linux:**
-  ```bash
-  source venv/bin/activate
-  ```
-
-### 5. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 6. Run the chatbot
-
-```bash
-python main.py
-```
-
-## Usage
-
-```
-Welcome to AI Chatbot! Type 'exit' to quit.
-
-You: What is Python?
-Bot: Python is a high-level programming language...
-  (responded in 3.21s)
-
-You: exit
-Goodbye!
-```
+# AI Chatbot – Authentication Setup Guide
 
 ## Project Structure
 
 ```
-├── main.py         # Main chatbot script
-├── requirements.txt   # Python dependencies
-├── .gitignore         # Files excluded from Git
-└── README.md          # This file
+.
+├── .env                # Secrets (DATABASE_URL, JWT_SECRET)
+├── schema.sql          # Neon DB schema (applied automatically on first run)
+├── db.py               # Connection pool + migration runner
+├── auth_model.py       # User CRUD + bcrypt password hashing
+├── auth_middleware.py  # JWT create/verify + Flask route decorator
+├── server.py           # Flask API server (auth + chat proxy)
+├── chat-bot-gui.py     # Tkinter GUI (replaces old version)
+└── main.py             # Ollama chain (unchanged)
 ```
+
+## Prerequisites
+
+```bash
+pip install psycopg2-binary bcrypt PyJWT python-dotenv flask flask-cors requests langchain-ollama langchain-core
+```
+
+## .env Configuration
+
+```
+DATABASE_URL='your-neon-connection-string'
+JWT_SECRET='generate-a-long-random-secret'
+FLASK_DEBUG=false
+```
+
+Generate a secure JWT secret:
+```bash
+python -c "import secrets; print(secrets.token_hex(32))"
+```
+
+## Running the Application
+
+**Step 1 – Start the Flask API server** (runs migrations on first boot):
+```bash
+python server.py
+```
+
+**Step 2 – Start Ollama** (in a separate terminal):
+```bash
+ollama serve
+ollama run llama3.2   # pull if not already downloaded
+```
+
+**Step 3 – Launch the GUI**:
+```bash
+python chat-bot-gui.py
+```
+
+## API Endpoints
+
+| Method | Path                  | Auth? | Description              |
+|--------|-----------------------|-------|--------------------------|
+| POST   | /api/auth/register    | No    | Create new account       |
+| POST   | /api/auth/login       | No    | Login, receive JWT       |
+| GET    | /api/auth/me          | Yes   | Verify token / profile   |
+| POST   | /api/chat             | Yes   | Send chat message        |
+
+### Register
+```json
+POST /api/auth/register
+{ "username": "alice", "password": "mypassword123" }
+
+Response 201:
+{ "token": "<jwt>", "username": "alice" }
+```
+
+### Login
+```json
+POST /api/auth/login
+{ "username": "alice", "password": "mypassword123" }
+
+Response 200:
+{ "token": "<jwt>", "username": "alice" }
+```
+
+### Chat (protected)
+```json
+POST /api/chat
+Authorization: Bearer <jwt>
+{ "question": "Hello!", "context": "" }
+
+Response 200:
+{ "response": "Hi! How can I help you today?" }
+```
+
+## Security Notes
+
+- Passwords are hashed with **bcrypt** (never stored in plaintext)
+- Auth uses **JWT (HS256)** with 24-hour expiry
+- All chat routes require a valid JWT
+- Token is stored **in-memory only** in the GUI (cleared on logout)
+- Add `JWT_SECRET` to your `.env` in production — never commit it
