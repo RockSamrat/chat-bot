@@ -4,7 +4,7 @@ auth_model.py - User model with password hashing and DB operations.
 
 import bcrypt
 import psycopg2.extras
-from db import get_conn, put_conn
+from backend.db import get_conn, put_conn
 
 
 class UserModel:

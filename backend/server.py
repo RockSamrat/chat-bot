@@ -18,14 +18,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ---------- Import project modules ----------
-from db import run_migrations
-from auth_model import UserModel
-from auth_middleware import create_token, require_auth
+from backend.db import run_migrations
+from backend.auth_model import UserModel
+from backend.auth_middleware import create_token, require_auth
 
 # ---------- Ollama / LangChain chain ----------
 # Import lazily so the server can start even when Ollama is offline
 try:
-    from main import chain as ollama_chain
+    from backend.main import chain as ollama_chain
     OLLAMA_AVAILABLE = True
 except Exception as _e:
     ollama_chain = None
