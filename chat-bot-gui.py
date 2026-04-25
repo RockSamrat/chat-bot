@@ -35,24 +35,24 @@ root.geometry("520x650")
 root.configure(bg="#f5f5f5")
 root.resizable(False, False)
 
-BG_MAIN = "#f5f5f5"
+BG_MAIN = "#F8F8F8"
 CARD_BG = "white"
 TEXT = "black"
 SUBTEXT = "#6b7280"
 ENTRY_BG = "#fafafa"
 ENTRY_BORDER = "#d1d5db"
-BTN_BG = "#1f1f1f"
-BTN_HOVER = "#333333"
+BTN_BG = "#4F46E5"
+BTN_HOVER = "#4338CA"
 BTN_FG = "white"
-LINK = "#2563eb"
+LINK = "#4F46E5"
 ERROR = "#dc2626"
 
 # Bubble colors
-USER_BUBBLE_BG = "#1f1f1f"
+USER_BUBBLE_BG = "#4F46E5"
 USER_BUBBLE_FG = "white"
 BOT_BUBBLE_BG = "#f0f0f0"
 BOT_BUBBLE_FG = "#1a1a1a"
-TIMESTAMP_COLOR = "#9ca3af"
+TIMESTAMP_COLOR = "#A5B4FC"
 
 
 # ─────────── Styles ───────────
@@ -178,32 +178,11 @@ tk.Label(
 
 make_link_button(signin_row, "Sign in", lambda: show_frame(login_frame)).pack(side="left", padx=(4, 0))
 
-google_btn = tk.Button(
-    register_card,
-    text="Sign up with Google",
-    bg="white",
-    fg=TEXT,
-    relief="solid",
-    bd=1,
-    font=("Segoe UI", 11),
-    cursor="hand2",
-    padx=10,
-    pady=12
-)
-google_btn.pack(fill="x", padx=38, pady=(25, 20))
-
-or_row = tk.Frame(register_card, bg=CARD_BG)
-or_row.pack(fill="x", padx=38, pady=(0, 18))
-
-tk.Frame(or_row, bg="#e5e7eb", height=1).pack(side="left", fill="x", expand=True, pady=10)
-tk.Label(or_row, text="or", bg=CARD_BG, fg=SUBTEXT, font=("Segoe UI", 11)).pack(side="left", padx=18)
-tk.Frame(or_row, bg="#e5e7eb", height=1).pack(side="left", fill="x", expand=True, pady=10)
 
 form_frame = tk.Frame(register_card, bg=CARD_BG)
 form_frame.pack(fill="x", padx=38)
 
-reg_name = create_labeled_entry(form_frame, "Your name (optional)")
-reg_user = create_labeled_entry(form_frame, "Email address")
+reg_user = create_labeled_entry(form_frame, "Username")
 reg_pass = create_labeled_entry(form_frame, "Password", show="*")
 
 reg_error = tk.Label(register_card, text="", bg=CARD_BG, fg=ERROR, font=("Segoe UI", 10))
@@ -214,7 +193,7 @@ def register():
     username = reg_user.get().strip()
     password = reg_pass.get().strip()
 
-    if username in ["", "Email address"] or password in ["", "Password"]:
+    if username in ["", "Username"] or password in ["", "Password"]:
         reg_error.config(text="Please fill all required fields")
         return
 
@@ -277,7 +256,7 @@ make_link_button(signup_row, "Sign up", lambda: show_frame(register_frame)).pack
 login_form = tk.Frame(login_card, bg=CARD_BG)
 login_form.pack(fill="x", padx=38, pady=(30, 0))
 
-login_user = create_labeled_entry(login_form, "Email address")
+login_user = create_labeled_entry(login_form, "Username")
 login_pass = create_labeled_entry(login_form, "Password", show="*")
 
 login_error = tk.Label(login_card, text="", bg=CARD_BG, fg=ERROR, font=("Segoe UI", 10))
