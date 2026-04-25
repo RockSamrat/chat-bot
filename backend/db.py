@@ -14,7 +14,7 @@ if not DATABASE_URL:
     raise EnvironmentError("DATABASE_URL not set in .env")
 
 # Connection pool (min 1, max 10 connections)
-_pool: pool.SimpleConnectionPool | None = None
+_pool: pool.SimpleConnectionPool | None = None  #_pool is a global variable (shared across app) //Connections are reused → fast + efficient
 
 
 def get_pool() -> pool.SimpleConnectionPool:
