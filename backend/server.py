@@ -3,10 +3,10 @@ server.py - Flask backend.
 
 Routes
 ------
-POST /api/auth/register  – create account
-POST /api/auth/login     – obtain JWT
-GET  /api/auth/me        – verify token & return profile   [protected]
-POST /api/chat           – proxy a chat turn to Ollama     [protected]
+POST /api/auth/register  create account
+POST /api/auth/login     obtain JWT
+GET  /api/auth/me        verify token & return profile   [protected]
+POST /api/chat           proxy a chat turn to Ollama     [protected]
 """
 
 import os
