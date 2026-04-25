@@ -8,10 +8,21 @@ POST /api/auth/login     obtain JWT
 GET  /api/auth/me        verify token & return profile   [protected]
 POST /api/chat           proxy a chat turn to Ollama     [protected]
 """
+"""
 
-import os
-import sys
-from flask  import Flask, request, jsonify, g
+os → system settings
+sys → runtime control
+Flask → web server
+request → incoming data
+jsonify → outgoing response
+g → store user data per request
+CORS → allow frontend requests
+dotenv → load .env config
+
+"""
+import os #Read environment variables and interact with the system
+import sys #Logging to stderr, exiting, handling runtime info
+from flask  import Flask, request, jsonify, g 
 from flask_cors import CORS
 from dotenv import load_dotenv
 
