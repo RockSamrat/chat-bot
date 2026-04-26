@@ -20,13 +20,17 @@ CORS → allow frontend requests
 dotenv → load .env config
 
 """
-import os #Read environment variables and interact with the system
-import sys #Logging to stderr, exiting, handling runtime info
-from flask  import Flask, request, jsonify, g 
+import os
+import sys
+from flask import Flask, request, jsonify, g
 from flask_cors import CORS
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Change to project root directory to ensure correct file paths
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(project_root)
 
 # ---------- Import project modules ----------
 from backend.db import run_migrations
@@ -120,7 +124,7 @@ def me():
 def chat():
     data, missing = _require_json_fields(["question"])
     if missing:
-        return jsonify({"error": "Missing 'question' field."}), 400
+        return jsonify({"error": f"Missing 'question' field."}), 400
 
     question: str = data["question"].strip()
     conversation_id: str = data.get("conversation_id", "").strip()
@@ -130,12 +134,16 @@ def chat():
 
     # Create a new conversation if one isn't provided
     if not conversation_id:
+        print(f"[chat] Creating new conversation for user {g.user['username']}", file=sys.stderr)
         new_conversation = create_new_conversation(g.user["sub"], g.user["username"])
         conversation_id = new_conversation["conversation_id"]
+        print(f"[chat] New conversation ID: {conversation_id}", file=sys.stderr)
+
         # Save the new conversation to file
         all_data = load_conversations()
         all_data["conversations"].append(new_conversation)
-        save_conversations(all_data)
+        save_result = save_conversations(all_data)
+        print(f"[chat] Conversation saved: {save_result}", file=sys.stderr)
 
     # Get conversation context if conversation_id is provided
     context: str = ""
@@ -145,7 +153,8 @@ def chat():
     try:
         # Save user message to conversation
         if conversation_id:
-            add_message(conversation_id, "user", question, g.user["sub"], g.user["username"])
+            msg_saved = add_message(conversation_id, "user", question, g.user["sub"], g.user["username"])
+            print(f"[chat] User message saved: {msg_saved}", file=sys.stderr)
 
         # Get bot response
         full_response = ""
@@ -154,12 +163,17 @@ def chat():
 
         # Save bot response to conversation
         if conversation_id:
-            add_message(conversation_id, "bot", full_response, g.user["sub"], g.user["username"])
+            bot_saved = add_message(conversation_id, "bot", full_response, g.user["sub"], g.user["username"])
+            print(f"[chat] Bot message saved: {bot_saved}", file=sys.stderr)
 
+        print(f"[chat] Response sent for conversation {conversation_id}", file=sys.stderr)
         return jsonify({"response": full_response, "conversation_id": conversation_id}), 200
     except ConnectionError:
         return jsonify({"error": "Could not connect to Ollama. Is it running?"}), 503
     except Exception as e:
+        print(f"[chat] ERROR: {e}", file=sys.stderr)
+        import traceback
+        traceback.print_exc(file=sys.stderr)
         return jsonify({"error": str(e)}), 500
 
 
@@ -169,5 +183,12 @@ if __name__ == "__main__":
     run_migrations()
     port = int(os.getenv("PORT", 5000))
     debug = os.getenv("FLASK_DEBUG", "false").lower() == "true"
+
+    # Verify conversations directory
+    from backend.conversations import ensure_directory_exists
+    ensure_directory_exists()
+
+    print(f"[server] Working directory: {os.getcwd()}")
+    print(f"[server] Conversations will be saved to: {os.path.join(os.getcwd(), 'data/conversations/conversations.json')}")
     print(f"[server] Starting on http://localhost:{port}  debug={debug}")
     app.run(host="0.0.0.0", port=port, debug=debug)

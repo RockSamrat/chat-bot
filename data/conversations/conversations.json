@@ -1,0 +1,97 @@
+{
+  "conversations": [
+    {
+      "conversation_id": "8d216583-f4e5-472f-80f0-948d7036c7bb",
+      "user_id": "test_user_1",
+      "username": "john_doe",
+      "created_at": "2026-04-26T11:02:46.210212",
+      "updated_at": "2026-04-26T11:02:46.210234",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hello",
+          "timestamp": "2026-04-26T11:02:46.210222",
+          "message_id": "37c53fcb-9a20-44f3-907c-5d427926fce4"
+        }
+      ]
+    },
+    {
+      "conversation_id": "4bd55bf1-097f-49d8-9a63-8dccd963026a",
+      "user_id": "test_user",
+      "username": "test_username",
+      "created_at": "2026-04-26T11:04:24.177855",
+      "updated_at": "2026-04-26T11:04:24.177892",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Debug test message",
+          "timestamp": "2026-04-26T11:04:24.177873",
+          "message_id": "15879784-9f85-43e8-9df1-d767d98a472c"
+        }
+      ]
+    },
+    {
+      "conversation_id": "6adb4f01-76da-4237-9f0f-a531d612096f",
+      "user_id": "c51ae7d6-0fa9-4b3b-ae9f-e0adfe7e25ab",
+      "username": "krishnaharki",
+      "created_at": "2026-04-26T11:11:52.317540",
+      "updated_at": "2026-04-26T11:12:09.293721",
+      "messages": [
+        {
+          "role": "user",
+          "content": "hello",
+          "timestamp": "2026-04-26T11:11:52.319122",
+          "message_id": "12c46f53-3ca3-441a-9c92-2f2054c73145"
+        },
+        {
+          "role": "bot",
+          "content": "Hello! How can I assist you today?",
+          "timestamp": "2026-04-26T11:12:09.293447",
+          "message_id": "058a4d29-ca31-4d89-9873-019b2230aba4"
+        }
+      ]
+    },
+    {
+      "conversation_id": "d57b7e6c-d112-4447-9fa6-23318568364e",
+      "user_id": "c51ae7d6-0fa9-4b3b-ae9f-e0adfe7e25ab",
+      "username": "krishnaharki",
+      "created_at": "2026-04-26T11:12:29.529103",
+      "updated_at": "2026-04-26T11:13:11.985112",
+      "messages": [
+        {
+          "role": "user",
+          "content": "I want to be python developer,",
+          "timestamp": "2026-04-26T11:12:29.529851",
+          "message_id": "16d45c9b-19af-4122-9155-4336c5e970e9"
+        },
+        {
+          "role": "bot",
+          "content": "To become a Python developer, here's a step-by-step guide:\n\n1. **Learn the basics**: Start with basic programming concepts such as variables, data types, loops, conditional statements, functions, and modules.\n2. **Install Python**: Download and install the latest version of Python from the official website (python.org).\n3. **Choose a IDE or text editor**: Select a suitable Integrated Development Environment (IDE) like PyCharm, Visual Studio Code, or Sublime Text, or use a basic text editor like Notepad++.\n4. **Learn Python syntax and semantics**: Study Python's syntax, data structures, file input/output, and object-oriented programming concepts.\n5. **Practice with online resources**:\n\t* LeetCode: Practice coding challenges to improve your problem-solving skills.\n\t* Codecademy: Complete Python courses and exercises.\n\t* Project Euler: Solve mathematical and computational problems.\n6. **Work on projects**: Apply your knowledge by building small projects, such as command-line tools, games, or web scrapers.\n7. **Learn libraries and frameworks**: Familiarize yourself with popular libraries like NumPy, pandas, Flask, Django, or scikit-learn.\n8. **Read books and documentation**:\n\t* \"Python Crash Course\" by Eric Matthes\n\t* \"Automate the Boring Stuff with Python\" by Al Sweigart\n\t* Official Python documentation (docs.python.org)\n9. **Join online communities**: Participate in forums like Reddit's r/learnpython, Stack Overflow, or GitHub to connect with other Python developers and get help when needed.\n10. **Take online courses or certifications**:\n\t* Coursera: Enroll in Python courses from top universities.\n\t* edX: Take Python courses from leading institutions.\n\t* Python Institute: Obtain a Python certification.\n11. **Network and build a portfolio**: Attend meetups, conferences, or workshops to meet other developers and showcase your projects on platforms like GitHub or GitLab.\n\nRemember, learning a programming language takes time and practice. Stay motivated, be patient, and enjoy the journey!",
+          "timestamp": "2026-04-26T11:13:11.985080",
+          "message_id": "7f581995-c02b-4c63-915c-366e0c417b08"
+        }
+      ]
+    },
+    {
+      "conversation_id": "e28dcd54-5d4f-4cef-af6d-f5cb0b63401e",
+      "user_id": "c51ae7d6-0fa9-4b3b-ae9f-e0adfe7e25ab",
+      "username": "krishnaharki",
+      "created_at": "2026-04-26T11:13:39.494398",
+      "updated_at": "2026-04-26T11:13:41.234363",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Thank you very much",
+          "timestamp": "2026-04-26T11:13:39.494811",
+          "message_id": "00243f22-f000-4ed4-bd4d-0f96679bab4e"
+        },
+        {
+          "role": "bot",
+          "content": "You're welcome. Is there something I can help you with?",
+          "timestamp": "2026-04-26T11:13:41.234341",
+          "message_id": "6518612f-4d8d-441b-8d57-2443d37d540a"
+        }
+      ]
+    }
+  ]
+}
