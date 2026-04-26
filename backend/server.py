@@ -32,6 +32,14 @@ load_dotenv()
 from backend.db import run_migrations
 from backend.auth_model import UserModel
 from backend.auth_middleware import create_token, require_auth
+from backend.conversations import (
+    add_message,
+    get_user_conversations,
+    get_conversation_context,
+    create_new_conversation,
+    save_conversations,
+    load_conversations,
+)
 
 # ---------- Ollama / LangChain chain ----------
 # Import lazily so the server can start even when Ollama is offline
@@ -115,16 +123,40 @@ def chat():
         return jsonify({"error": "Missing 'question' field."}), 400
 
     question: str = data["question"].strip()
-    context: str = data.get("context", "")
+    conversation_id: str = data.get("conversation_id", "").strip()
 
     if not OLLAMA_AVAILABLE or ollama_chain is None:
         return jsonify({"error": "AI backend (Ollama) is not available."}), 503
 
+    # Create a new conversation if one isn't provided
+    if not conversation_id:
+        new_conversation = create_new_conversation(g.user["sub"], g.user["username"])
+        conversation_id = new_conversation["conversation_id"]
+        # Save the new conversation to file
+        all_data = load_conversations()
+        all_data["conversations"].append(new_conversation)
+        save_conversations(all_data)
+
+    # Get conversation context if conversation_id is provided
+    context: str = ""
+    if conversation_id:
+        context = get_conversation_context(conversation_id)
+
     try:
+        # Save user message to conversation
+        if conversation_id:
+            add_message(conversation_id, "user", question, g.user["sub"], g.user["username"])
+
+        # Get bot response
         full_response = ""
         for chunk in ollama_chain.stream({"context": context, "question": question}):
             full_response += chunk
-        return jsonify({"response": full_response}), 200
+
+        # Save bot response to conversation
+        if conversation_id:
+            add_message(conversation_id, "bot", full_response, g.user["sub"], g.user["username"])
+
+        return jsonify({"response": full_response, "conversation_id": conversation_id}), 200
     except ConnectionError:
         return jsonify({"error": "Could not connect to Ollama. Is it running?"}), 503
     except Exception as e:
