@@ -1,235 +1,278 @@
-# 🤖 AI Chatbot — Local LLM with Auth
+# AI Chatbot System (Flask + Ollama + JWT Authentication)
 
-A locally-running AI chatbot powered by **Ollama + LLaMA 3.2**, with a desktop GUI (Tkinter), a Flask REST API backend, and JWT-based user authentication backed by a **Neon (PostgreSQL)** database.
+## Overview
 
----
+This project is a full-stack AI chatbot application built with a Flask backend and a simple frontend interface. It supports user authentication, AI-powered chat interaction, and persistent conversation storage.
 
-## ✨ Features
-
-- 💬 Chat with LLaMA 3.2 running fully locally via Ollama
-- 🔐 User registration & login with JWT authentication
-- 🗄️ PostgreSQL (Neon) database with auto-migration on first run
-- 🖥️ Clean Tkinter desktop GUI with chat bubbles
-- 🔒 Passwords hashed with bcrypt — never stored in plaintext
-- 🚪 Logout clears the token from memory immediately
+The system demonstrates backend development, authentication, AI integration, and data handling, making it suitable for learning and portfolio purposes.
 
 ---
 
-## 📁 Project Structure
+## Features
+
+* User registration and login using JWT authentication
+* Protected API routes with middleware
+* AI chatbot integration using Ollama
+* Conversation history storage
+* JSON-based persistence for chats
+* Modular backend architecture
+* REST API design
+* Input validation and error handling
+
+---
+
+## Tech Stack
+
+### Backend
+
+* Python (Flask)
+* JWT Authentication
+* PostgreSQL (Neon DB for users)
+* JSON file storage (chat history)
+* Ollama / LangChain (AI model)
+
+### Frontend
+
+* HTML
+* CSS
+* JavaScript
+
+### Tools
+
+* Git and GitHub
+* Linux environment
+* Environment variables (.env)
+
+---
+
+## Project Structure
 
 ```
 chat-bot/
+│
 ├── backend/
-│   ├── server.py           # Flask API — auth routes + chat proxy
-│   ├── auth_model.py       # User CRUD + bcrypt password hashing
-│   ├── auth_middleware.py  # JWT create/verify + Flask route decorator
-│   ├── db.py               # DB connection pool + migration runner
-│   ├── schema.sql          # Neon DB schema (auto-applied on first run)
-│   └── main.py             # Ollama LangChain chain (LLaMA 3.2)
-├── chat-bot-gui.py         # Tkinter desktop GUI
-├── requirements.txt        # Python dependencies
-├── .env                    # Secrets (not committed — see below)
-└── .gitignore
+│   ├── server.py                # Main Flask application
+│   ├── db.py                    # Database connection
+│   ├── auth_model.py            # User model logic
+│   ├── auth_middleware.py       # JWT middleware
+│   ├── conversations.py         # Chat storage logic
+│   ├── main.py                  # AI chain (Ollama)
+│   └── schema.sql               # Database schema
+│
+├── frontend/                    # Frontend UI
+│
+├── conversations.json           # Chat storage (auto-created)
+├── requirements.txt
+├── .env
+└── README.md
 ```
 
 ---
 
-## ⚙️ Prerequisites
+## Authentication Flow
 
-Make sure you have the following installed:
-
-- Python 3.10+
-- [Ollama](https://ollama.com/) installed and running
-- A [Neon](https://neon.tech/) PostgreSQL database (free tier works fine)
+1. User registers via `/api/auth/register`
+2. User logs in via `/api/auth/login`
+3. JWT token is generated
+4. Protected routes verify token using middleware
+5. User data is stored in `g.user`
 
 ---
 
-## 🚀 Setup & Installation
+## Chat Flow
 
-### 1. Clone the repository
+1. User sends request to `/api/chat`
+2. Token is verified
+3. Conversation ID is created (if not provided)
+4. Previous context is loaded
+5. AI model processes the input
+6. Response is generated
+7. Conversation is saved
+
+---
+
+## Conversation Storage
+
+Chat data is stored in a JSON file:
+
+```
+conversations.json
+```
+
+### Structure
+
+```json
+{
+  "conversations": [
+    {
+      "conversation_id": "uuid",
+      "user_id": "123",
+      "username": "krish",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hello",
+          "timestamp": "ISO"
+        },
+        {
+          "role": "bot",
+          "content": "Hi, how can I help?",
+          "timestamp": "ISO"
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Notes
+
+* File is created automatically when first message is saved
+* Data is appended, not overwritten
+* Suitable for learning, not production
+
+---
+
+## API Endpoints
+
+### Authentication
+
+| Method | Endpoint           | Description      |
+| ------ | ------------------ | ---------------- |
+| POST   | /api/auth/register | Register user    |
+| POST   | /api/auth/login    | Login user       |
+| GET    | /api/auth/me       | Get user profile |
+
+---
+
+### Chat
+
+| Method | Endpoint  | Description             |
+| ------ | --------- | ----------------------- |
+| POST   | /api/chat | Send message to chatbot |
+
+---
+
+## Example Request
+
+```bash
+curl -X POST http://127.0.0.1:5000/api/chat \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer YOUR_TOKEN" \
+-d '{"question":"Hello"}'
+```
+
+---
+
+## Setup Instructions
+
+### 1. Clone Repository
 
 ```bash
 git clone https://github.com/RockSamrat/chat-bot.git
 cd chat-bot
 ```
 
-### 2. Install dependencies
+---
+
+### 2. Create Virtual Environment
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+---
+
+### 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Or install manually:
+---
+
+### 4. Configure Environment
+
+Create a `.env` file:
+
+```
+DATABASE_URL=your_neon_db_url
+JWT_SECRET=your_secret_key
+PORT=5000
+FLASK_DEBUG=true
+```
+
+---
+
+### 5. Run Server
 
 ```bash
-pip install psycopg2-binary bcrypt PyJWT python-dotenv flask flask-cors requests langchain-ollama langchain-core
+python -m backend.server
 ```
-
-### 3. Create your `.env` file
-
-Create a `.env` file in the project root with the following:
-
-```env
-DATABASE_URL='your-neon-connection-string'
-JWT_SECRET='your-long-random-secret'
-FLASK_DEBUG=false
-```
-
-> **Generate a secure JWT secret:**
-> ```bash
-> python -c "import secrets; print(secrets.token_hex(32))"
-> ```
-
-> ⚠️ **Never commit your `.env` file.** It is already listed in `.gitignore`.
 
 ---
 
-## ▶️ Running the Application
+### 6. Run Ollama
 
-Open **three separate terminals** and run each step in order:
-
-### Step 1 — Start the Flask backend
+Ensure Ollama is running:
 
 ```bash
-python backend/server.py
-```
-
-> This automatically applies the database schema on first boot.
-
-### Step 2 — Start Ollama with LLaMA 3.2
-
-```bash
-ollama serve
-```
-
-In another terminal (or after `serve` is running):
-
-```bash
-ollama run llama3.2
-```
-
-> If you haven't downloaded the model yet, this will pull it automatically.
-
-### Step 3 — Launch the GUI
-
-```bash
-python chat-bot-gui.py
-```
-
-The app will open. **Register** a new account or **Sign in** to start chatting.
-
----
-
-## 🔌 API Reference
-
-The Flask backend runs at `http://localhost:5000`.
-
-| Method | Endpoint              | Auth Required | Description              |
-|--------|-----------------------|:-------------:|--------------------------|
-| POST   | `/api/auth/register`  | No            | Create a new account     |
-| POST   | `/api/auth/login`     | No            | Login and receive a JWT  |
-| GET    | `/api/auth/me`        | Yes ✅        | Verify token / get profile |
-| POST   | `/api/chat`           | Yes ✅        | Send a message to the AI |
-
-### Register
-
-```http
-POST /api/auth/register
-Content-Type: application/json
-
-{
-  "username": "alice",
-  "password": "mypassword123"
-}
-```
-
-**Response `201`:**
-```json
-{
-  "token": "<jwt>",
-  "username": "alice"
-}
-```
-
-### Login
-
-```http
-POST /api/auth/login
-Content-Type: application/json
-
-{
-  "username": "alice",
-  "password": "mypassword123"
-}
-```
-
-**Response `200`:**
-```json
-{
-  "token": "<jwt>",
-  "username": "alice"
-}
-```
-
-### Chat (protected)
-
-```http
-POST /api/chat
-Authorization: Bearer <jwt>
-Content-Type: application/json
-
-{
-  "question": "Hello!",
-  "context": ""
-}
-```
-
-**Response `200`:**
-```json
-{
-  "response": "Hi! How can I help you today?"
-}
+ollama run llama2
 ```
 
 ---
 
-## 🔐 Security Notes
+## Common Issues
 
-| Concern | How it's handled |
-|---|---|
-| Passwords | Hashed with **bcrypt** — never stored as plaintext |
-| Authentication | **JWT (HS256)** tokens with 24-hour expiry |
-| Route protection | All `/api/chat` routes require a valid Bearer token |
-| Token storage | Stored **in-memory only** in the GUI — cleared on logout |
-| Secret management | `JWT_SECRET` lives only in `.env` — never commit it |
+### conversations.json not created
+
+* Ensure `/api/chat` is called
+* Ensure `add_message()` is executed
+* Use `"question"` instead of `"message"` in request
 
 ---
 
-## 🛠️ Tech Stack
+### Unauthorized error
 
-| Layer | Technology |
-|---|---|
-| AI Model | LLaMA 3.2 via Ollama |
-| AI Framework | LangChain + langchain-ollama |
-| Backend | Flask + Flask-CORS |
-| Database | Neon (PostgreSQL) via psycopg2 |
-| Auth | bcrypt + PyJWT |
-| GUI | Python Tkinter |
+* Token missing or invalid
+* Use correct header:
+
+```
+Authorization: Bearer <token>
+```
 
 ---
 
-## 🐛 Troubleshooting
+### Ollama not working
 
-**"Cannot reach server"** — Make sure `python backend/server.py` is running on port 5000.
-
-**"Model not found"** — Run `ollama pull llama3.2` to download the model first.
-
-**Database errors on startup** — Double-check your `DATABASE_URL` in `.env` points to a valid Neon connection string.
-
-**GUI won't open** — Ensure `tkinter` is available. On Linux: `sudo apt install python3-tk`.
+* Ensure Ollama is installed
+* Ensure model is running
 
 ---
 
-## 📄 License
+## Future Improvements
 
-This project is open source. Feel free to fork and build on it!
+* Replace JSON storage with PostgreSQL
+* Add Redis for caching
+* Implement WebSocket for real-time chat
+* Add UI for chat history
+* Containerize using Docker
+* Deploy with Kubernetes
+* Add CI/CD pipeline
+
+---
+
+## Learning Outcomes
+
+* Backend API development
+* Authentication using JWT
+* AI integration with LLMs
+* Data storage design
+* System architecture understanding
+
+---
+
+## License
+
+This project is intended for educational and portfolio use.
